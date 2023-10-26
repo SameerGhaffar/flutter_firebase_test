@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-class SnackBarService{
+class Functions{
+
+
 
  static void showSnackBar(String str,BuildContext context) {
 

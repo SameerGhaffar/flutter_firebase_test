@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_firebase_test/home/home.dart';
-import 'package:flutter_firebase_test/login/login.dart';
+import 'package:flutter_firebase_test/ui/home/home.dart';
+import 'package:flutter_firebase_test/ui/login/login.dart';
 import 'package:flutter_firebase_test/services/firebase_auth.dart';
-import 'package:flutter_firebase_test/signup/sign_up.dart';
+import 'package:flutter_firebase_test/ui/signup/sign_up.dart';
 import 'firebase_options.dart';
 
 void main() async {

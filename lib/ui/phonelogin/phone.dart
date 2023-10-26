@@ -1,10 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase_test/home/home.dart';
-import 'package:flutter_firebase_test/phonelogin/otp.dart';
 import 'package:flutter_firebase_test/services/firebase_auth.dart';
-import 'package:flutter_firebase_test/signup/sign_up.dart';
 
 class PhoneLogin extends StatefulWidget {
   const PhoneLogin({super.key});

@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase_test/home/home.dart';
-import 'package:flutter_firebase_test/login/login.dart';
+import 'package:flutter_firebase_test/ui//home/home.dart';
+import 'package:flutter_firebase_test/ui/login/login.dart';
 import 'package:flutter_firebase_test/services/firebase_auth.dart';
 import 'package:pin_code_text_field/pin_code_text_field.dart';
 
@@ -17,7 +17,6 @@ class Otp extends StatelessWidget {
 
 
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    bool isObscure = true;
     TextEditingController smsController = TextEditingController();
 
     return Scaffold(

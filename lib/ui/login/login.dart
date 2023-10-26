@@ -1,12 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase_test/home/home.dart';
-import 'package:flutter_firebase_test/phonelogin/phone.dart';
 import 'package:flutter_firebase_test/services/firebase_auth.dart';
 import 'package:flutter_firebase_test/services/snackbar.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:flutter_firebase_test/signup/sign_up.dart';
+import 'package:flutter_firebase_test/ui/home/home.dart';
+import 'package:flutter_firebase_test/ui/phonelogin/phone.dart';
+import 'package:flutter_firebase_test/ui/signup/sign_up.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -82,31 +82,34 @@ class _LoginState extends State<Login> {
                                     (route) => false);
                               }),
                       ])),
-                      Card(
-                        elevation: 4,
-                        child: Container(
-                          width: 200,
-                          padding: EdgeInsets.all(6),
+                      InkWell(
+                        onTap: () => onGoogleTap(),
+                        child: Card(
+                          elevation: 4,
+                          child: Container(
+                            width: 200,
+                            padding: EdgeInsets.all(6),
 
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
 
-                            children: [
-                              Spacer(),
-                              Image.asset(
-                                'assets/images/google.png',
-                                width: 35,
-                                height: 35,
-                              ),
-                              Spacer(),
-                              const Text('SignUp With Google',style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              ),),
-                              Spacer(),
-                            ],
+                              children: [
+                                Spacer(),
+                                Image.asset(
+                                  'assets/images/google.png',
+                                  width: 35,
+                                  height: 35,
+                                ),
+                                Spacer(),
+                                const Text('SignUp With Google',style: TextStyle(
+                                  fontWeight: FontWeight.bold
+                                ),),
+                                Spacer(),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -123,9 +126,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  TextFormField buildTextField(
-      TextEditingController emailController, String label, String hint,
-      {bool isPassword = false, String? Function(String?)? validator}) {
+  TextFormField buildTextField(TextEditingController emailController, String label, String hint, {bool isPassword = false, String? Function(String?)? validator}) {
     return TextFormField(
       validator: validator,
       keyboardType: isPassword ? TextInputType.emailAddress : null,
@@ -186,7 +187,7 @@ class _LoginState extends State<Login> {
         print('User Logined');
       } else {
         String? error = AuthService().error();
-        SnackBarService.showSnackBar(
+        Functions.showSnackBar(
             error?.toUpperCase().replaceAll("-", " ") ?? 'User Not Login',
             context);
       }
