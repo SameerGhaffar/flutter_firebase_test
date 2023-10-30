@@ -2,7 +2,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_test/services/firebase_auth.dart';
-import 'package:flutter_firebase_test/services/snackbar.dart';
+import 'package:flutter_firebase_test/services/functions.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_firebase_test/ui/home/home.dart';
 import 'package:flutter_firebase_test/ui/phonelogin/phone.dart';

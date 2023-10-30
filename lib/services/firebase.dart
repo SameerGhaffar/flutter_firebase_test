@@ -1,10 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_firebase_test/model/Image_model.dart';
 import 'package:flutter_firebase_test/model/task_model.dart';
 
-class FirestoreService {
+class FirebaseService {
 
   final CollectionReference users =
       FirebaseFirestore.instance.collection('TODO');
+  final CollectionReference images =
+  FirebaseFirestore.instance.collection('Images');
+
+
+  getTodoStream(){
+   return users.snapshots();
+  }
+  getImagesStream(){
+    return images.snapshots();
+  }
 
   addTask(TaskModel taskModel) async {
     try {
@@ -17,6 +28,18 @@ class FirestoreService {
       return false;
     }
   }
+  addImage(String url) async {
+    try {
+      DocumentReference doc= images.doc();
+      ImageModel imageModel = ImageModel(docId: doc.id,imageUrl: url);
+      await doc.set(imageModel.toMap());
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
 
   deleteTask(String? docId){
     try{
@@ -27,6 +50,16 @@ class FirestoreService {
 
     }
   }
+  deleteImage(String? docId){
+    try{
+      if(docId != null){
+        images.doc(docId).delete();
+      }
+    } catch(e){
+      print(e);
+    }
+  }
+
 
   updateTaskAndDate(TaskModel taskModel){
    users.doc(taskModel.docId).update(taskModel.toUpdateTaskAndDate());

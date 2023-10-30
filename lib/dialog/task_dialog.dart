@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_test/model/task_model.dart';
 import 'package:flutter_firebase_test/services/firebase_auth.dart';
-import 'package:flutter_firebase_test/services/firestore.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_firebase_test/services/firebase.dart';
 
 class TaskDialog extends StatefulWidget {
   const TaskDialog({super.key, this.isEdit = false, this.taskModel});
@@ -16,18 +15,19 @@ class TaskDialog extends StatefulWidget {
 
 class _TaskDialogState extends State<TaskDialog> {
   TextEditingController taskController = TextEditingController();
-  DateTime? date;
-  String? selectedDate;
+  TimeOfDay? time;
+  String? selectedTime;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  final FirestoreService _firestoreService = FirestoreService();
+  final FirebaseService _firestoreService = FirebaseService();
   final AuthService _authService = AuthService();
+
   @override
   void initState() {
     super.initState();
     if (widget.taskModel != null) {
-      selectedDate = widget.taskModel!.date.toString();
+      selectedTime = widget.taskModel!.date.toString();
       taskController.text = widget.taskModel!.task;
     }
   }
@@ -51,16 +51,19 @@ class _TaskDialogState extends State<TaskDialog> {
                     validator: taskValidator),
                 Row(
                   children: [
-                    const Text("Time : ",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),),
+                    const Text(
+                      "Time : ",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
                     RichText(
                       text: TextSpan(
                         children: [
-                          date != null || selectedDate != null
+                          time != null || selectedTime != null
                               ? TextSpan(
-                                  text: selectedDate,
-                                  style: const TextStyle(color: Colors.black),)
+                                  text: selectedTime,
+                                  style: const TextStyle(color: Colors.black),
+                                )
                               : TextSpan(
                                   text: '"Please Select Date "',
                                   style: TextStyle(
@@ -74,21 +77,20 @@ class _TaskDialogState extends State<TaskDialog> {
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: InkWell(
-                          onTap: () async {
-                            date = await showDatePicker(
-                              context: context,
-                              keyboardType: TextInputType.number,
-                              barrierColor: Colors.white,
-                              currentDate: DateTime.now(),
-                              helpText: "Select Date for TODO Task",
-                              firstDate: DateTime.now(),
-                              lastDate: DateTime(2025),
-                            );
-                            selectedDate =
-                                DateFormat.yMMMd().format(date!).toString();
-                            setState(() {});
-                          },
-                          child: const Icon(Icons.add),),
+                        onTap: () async {
+                          time = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+
+
+                          );
+                          if(time!=null){
+                            selectedTime = time!.format(context).toString();
+                          }
+                          setState(() {});
+                        },
+                        child: const Icon(Icons.add),
+                      ),
                     ),
                   ],
                 ),
@@ -97,8 +99,10 @@ class _TaskDialogState extends State<TaskDialog> {
                   children: [
                     ElevatedButton(
                       style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              Colors.redAccent.withOpacity(0.6),),),
+                        backgroundColor: MaterialStateProperty.all(
+                          Colors.redAccent.withOpacity(0.6),
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -169,12 +173,11 @@ class _TaskDialogState extends State<TaskDialog> {
   }
 
   onClickUpload() async {
-
     if (formKey.currentState!.validate()) {
       String taskText = taskController.text.toString();
-      if (selectedDate != null) {
+      if (selectedTime != null) {
         TaskModel taskModel = TaskModel(
-            task: taskText, date: selectedDate!, uId: _authService.user!.uid);
+            task: taskText, date: selectedTime!, uId: _authService.user!.uid);
         if (await _firestoreService.addTask(taskModel)) {
           Navigator.pop(context);
         }
@@ -182,19 +185,17 @@ class _TaskDialogState extends State<TaskDialog> {
     }
   }
 
-  onClickUpdate(){
+  onClickUpdate() {
     if (formKey.currentState!.validate()) {
       String taskText = taskController.text.toString();
 
-      if (selectedDate != null || date.toString() != null) {
-        TaskModel taskModel = TaskModel(
-            task: taskText,
-            date: selectedDate ?? date.toString(),
-            uId: widget.taskModel!.uId,
-            docId: widget.taskModel!.docId);
+      TaskModel taskModel = TaskModel(
+          task: taskText,
+          date: selectedTime ?? time.toString(),
+          uId: widget.taskModel!.uId,
+          docId: widget.taskModel!.docId);
 
-        _firestoreService.updateTaskAndDate(taskModel);
-      }
+      _firestoreService.updateTaskAndDate(taskModel);
 
       Navigator.pop(context);
     }

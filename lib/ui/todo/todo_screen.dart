@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_test/model/task_model.dart';
 import 'package:flutter_firebase_test/services/dialog.dart';
-import 'package:flutter_firebase_test/services/firestore.dart';
+import 'package:flutter_firebase_test/services/firebase.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
@@ -13,25 +13,28 @@ class TodoScreen extends StatefulWidget {
 
 class _TodoScreenState extends State<TodoScreen> {
   final DialogService _dialogService = DialogService();
-  final FirestoreService _firestoreService = FirestoreService();
+  final FirebaseService _firebaseService = FirebaseService();
 
   List<TaskModel> taskList = [];
 
   @override
   void initState() {
     super.initState();
-
-    _firestoreService.users.snapshots().listen((event) {
-      taskList.clear();
-      taskList = List.generate(
-        event.size,
-        (index) => TaskModel.fromMap(
-            event.docs[index] as DocumentSnapshot<Map<String, dynamic>>),
-      );
-      setState(() {});
-    });
+    //
+    // _firebaseService.users.snapshots().listen((event) {
+    //   taskList.clear();
+    //   taskList = List.generate(
+    //     event.size,
+    //     (index) => TaskModel.fromMap(
+    //         event.docs[index] as DocumentSnapshot<Map<String, dynamic>>),
+    //   );
+    //   setState(() {});
+    // });
   }
 
+  // TaskModel getTaskData(int index) {
+  //   return taskList[index];
+  // }
   TaskModel getTaskData(int index) {
     return taskList[index];
   }
@@ -48,13 +51,43 @@ class _TodoScreenState extends State<TodoScreen> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: taskCard(index),
-              ),
-              itemCount: taskList.length,
+
+            child: StreamBuilder(
+              stream:_firebaseService.getTodoStream(),
+
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
+                if(snapshot.connectionState == ConnectionState.waiting){
+                  return Container();
+                }else if (snapshot.hasError){
+                  return Text("Error: ${snapshot.error}");
+                }
+                  taskList = List.generate(
+                    snapshot.data!.docs.length,
+                        (index) => TaskModel.fromMap(
+                        snapshot.data!.docs[index] as DocumentSnapshot<Map<String, dynamic>>),
+                  );
+                  return ListView.builder(
+                    itemBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: taskCard(index),
+
+                    ),
+                    itemCount: taskList.length,
+                  );
+
+
+
+              },
+
             ),
+
+            // child: ListView.builder(
+            //   itemBuilder: (context, index) => Padding(
+            //     padding: const EdgeInsets.all(8.0),
+            //     child: taskCard(index),
+            //   ),
+            //   itemCount: taskList.length,
+            // ),
           ),
           Container(
             height: 80,
@@ -78,7 +111,7 @@ class _TodoScreenState extends State<TodoScreen> {
         decoration: const BoxDecoration(
             color: Colors.white60,
             borderRadius: BorderRadius.all(Radius.circular(12))),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         child: Row(
           // mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -114,7 +147,7 @@ class _TodoScreenState extends State<TodoScreen> {
             ),
             IconButton(
               onPressed: () {
-                _firestoreService.deleteTask(getTaskData(index).docId);
+                _firebaseService.deleteTask(getTaskData(index).docId);
               },
               icon: const Icon(
                 Icons.delete,

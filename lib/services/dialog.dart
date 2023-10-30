@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase_test/dialog/task_dialog.dart';
+import 'package:flutter_firebase_test/model/Image_model.dart';
 import 'package:flutter_firebase_test/model/task_model.dart';
+import 'package:flutter_firebase_test/services/firebase.dart';
 
 class DialogService {
-  Future<void> showAlertDialog(BuildContext context) async {
+  Future<void> showAlertDialog(BuildContext context,String docId) async {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return _alertDialog(context);
+        return _alertDialog(context,docId);
       },
     );
   }
@@ -22,28 +24,9 @@ class DialogService {
     );
   }
 
-  AlertDialog _alertDialog(BuildContext context) {
+  AlertDialog _alertDialog(BuildContext context,String docId) {
     return AlertDialog(
-      title: ListTile(
-        leading: const Icon(Icons.person),
-        title: const Text('Sameer'),
-        subtitle: Text(
-          'Flutter Developer',
-          style: TextStyle(color: Colors.black.withOpacity(0.6)),
-        ),
-        iconColor: Colors.black,
-        trailing: const Icon(
-          Icons.verified,
-          color: Colors.blue,
-        ),
-      ),
-      content: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Text(
-          "Bachelor's in Computer Science from University of Sahiwal",
-          style: TextStyle(color: Colors.black.withOpacity(0.6)),
-        ),
-      ),
+      title: Text("Do you really want to delete ?"),
       actions: [
         ElevatedButton(
           child: const Text(
@@ -56,13 +39,18 @@ class DialogService {
         ),
         const Spacer(),
         ElevatedButton(
+          style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.redAccent.withOpacity(0.7))),
+          onPressed: () {
+           FirebaseService firebase =FirebaseService();
+           firebase.deleteImage(docId);
+           Navigator.of(context).pop();
+          },
           child: const Text(
-            'Upload',
+            'Delete',
             style: TextStyle(color: Colors.black),
           ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          
+          
         ),
       ],
     );
